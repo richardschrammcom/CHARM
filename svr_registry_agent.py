@@ -379,7 +379,6 @@ AGENT_CARD = {
     "url": "https://www.richardschramm.com"
   },
   "version": "0.0.1",
-  "documentationUrl": "https://richardshramm.com/agent_registry/",
   "capabilities": {
     "streaming": False,
     "pushNotifications": False,
