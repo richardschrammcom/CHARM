@@ -120,9 +120,9 @@ def test_orchestrator_cannot_approve_off_allowlist():
 
 def test_orchestrator_can_approve_allowlisted():
     chat = g.Identity("ChatAgent")
-    cap = g.mint_capability("EmailAgent", "send_email", ["owner@example.com", "teammate@fairwindtech.com"],
+    cap = g.mint_capability("EmailAgent", "send_email", ["owner@example.com", "teammate@example.com"],
                             "email", ident=chat)
-    g.verify_capability(cap, "EmailAgent", "send_email", ["owner@example.com", "teammate@fairwindtech.com"], "email")
+    g.verify_capability(cap, "EmailAgent", "send_email", ["owner@example.com", "teammate@example.com"], "email")
 
 
 def test_untrusted_issuer_rejected():

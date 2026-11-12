@@ -16,7 +16,7 @@
   "allowed_agent_hosts": ["127.0.0.1", "localhost"],
   "allowlists": {
     "_comment": "The user profile's own email and phone are always included. '@domain.com' allows a whole domain.",
-    "email": ["@fairwindtech.com"],
+    "email": ["@example.com"],
     "phone": []
   },
   "capability_issuers": {
