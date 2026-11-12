@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="charm-ui-token" content="{{ ui_token }}">
+    <title>Agent Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/dashboard.css?v={{ cache_bust }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Top bar -->
+    <header class="top-bar">
+        <div class="top-bar-left">
+            <span class="logo-wordmark">CHARM V3.0</span>
+            <h1>Agent Dashboard</h1>
+        </div>
+        <div class="top-bar-right">
+            <span class="badge bg-secondary" id="trace-status">Trace: connecting...</span>
+        </div>
+    </header>
+
+    <!-- Three-panel layout -->
+    <div class="panels-container">
+
+        <!-- LEFT PANEL: Agent Roster + User Profile -->
+        <div class="panel panel-left">
+            <div class="panel-header">
+                <h2><i class="fas fa-robot"></i> Agents</h2>
+                <button class="btn btn-sm btn-outline-secondary" id="refresh-agents" title="Refresh">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+            <div class="panel-body" id="left-panel-body">
+                <div id="agent-list">
+                    <div class="text-center text-muted p-3">
+                        <i class="fas fa-spinner fa-spin"></i> Loading agents...
+                    </div>
+                </div>
+
+                <!-- Assistant Profile Section -->
+                <div class="profile-section">
+                    <div class="profile-header" id="assistant-profile-toggle">
+                        <h3><i class="fas fa-robot"></i> Assistant Profile</h3>
+                        <i class="fas fa-chevron-down profile-chevron" id="assistant-profile-chevron"></i>
+                    </div>
+                    <div class="profile-body" id="assistant-profile-body" style="display:none;">
+                        <div class="profile-field">
+                            <label>Name</label>
+                            <input type="text" id="assistant-name" class="form-control form-control-sm">
+                        </div>
+                        <div class="profile-field">
+                            <label>Personality</label>
+                            <textarea id="assistant-personality" class="form-control form-control-sm" rows="3"></textarea>
+                        </div>
+                        <div class="profile-actions">
+                            <button class="btn btn-sm btn-primary" id="save-assistant-profile">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <span class="profile-saved-msg" id="assistant-profile-saved-msg"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Profile Section -->
+                <div class="profile-section">
+                    <div class="profile-header" id="profile-toggle">
+                        <h3><i class="fas fa-user"></i> User Profile</h3>
+                        <i class="fas fa-chevron-down profile-chevron" id="profile-chevron"></i>
+                    </div>
+                    <div class="profile-body" id="profile-body" style="display:none;">
+                        <div class="profile-field">
+                            <label>Name</label>
+                            <input type="text" id="profile-name" class="form-control form-control-sm">
+                        </div>
+                        <div class="profile-field">
+                            <label>Email</label>
+                            <input type="email" id="profile-email" class="form-control form-control-sm">
+                        </div>
+                        <div class="profile-field">
+                            <label>Phone</label>
+                            <input type="tel" id="profile-phone" class="form-control form-control-sm">
+                        </div>
+                        <div class="profile-field">
+                            <label>Role</label>
+                            <input type="text" id="profile-role" class="form-control form-control-sm">
+                        </div>
+                        <div class="profile-field">
+                            <label>Notes</label>
+                            <textarea id="profile-notes" class="form-control form-control-sm" rows="2"></textarea>
+                        </div>
+                        <div class="profile-actions">
+                            <button class="btn btn-sm btn-primary" id="save-profile">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <span class="profile-saved-msg" id="profile-saved-msg"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MIDDLE PANEL: Chat -->
+        <div class="panel panel-middle" id="panel-chat">
+            <div class="panel-header">
+                <h2><i class="fas fa-comments"></i> Chat</h2>
+                <div class="chat-think-toggle">
+                    <input type="checkbox" id="think-aloud" />
+                    <label for="think-aloud">Think out loud</label>
+                </div>
+            </div>
+            <div class="panel-body" id="chat-messages">
+                <div class="chat-bubble agent welcome-bubble">
+                    Hi, I'm {{ assistant_name }}. How can I help you today?
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <form id="chat-form" autocomplete="off">
+                    <div class="input-group">
+                        <textarea id="chat-input" class="form-control" rows="1"
+                               placeholder="Type your message... (Enter to send, Shift+Enter for new line)"
+                               autofocus></textarea>
+                        <button type="submit" class="btn btn-primary" id="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Drag handle to resize chat/trace -->
+        <div class="resize-handle" id="resize-handle">
+            <div class="resize-dots"></div>
+        </div>
+
+        <!-- RIGHT PANEL: Conversation Trace -->
+        <div class="panel panel-right" id="panel-trace">
+            <div class="panel-header">
+                <h2><i class="fas fa-stream"></i> Trace</h2>
+                <div style="display:flex; align-items:center; gap:4px;">
+                    <div class="trace-mode-toggle">
+                        <select id="trace-mode">
+                            <option value="standard">Standard</option>
+                            <option value="conversation">Verbose</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary" id="clear-trace" title="Clear">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="panel-body" id="trace-log">
+                <div class="text-center text-muted p-3">
+                    Waiting for agent activity...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/dashboard.js?v={{ cache_bust }}"></script>
+    <script>
+        initDashboard();
+    </script>
+</body>
+</html>

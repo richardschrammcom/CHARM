@@ -1,0 +1,5 @@
+# Dependencies for the ISOLATED browser venv (.venv-web) used by the Web Agent's
+# web_browser_runner.py. These MUST be installed in a separate virtualenv — browser-use
+# force-pins versions that conflict with the main framework (google-adk / a2a-sdk).
+browser-use[core]==0.13.1
+browser-use-sdk==3.4.2

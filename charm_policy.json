@@ -1,0 +1,37 @@
+{
+  "_comment": "CHARM 3.0 guard policy. Read by charm_guard.py on every check, so edits apply without restarts. No secrets belong in this file.",
+  "agents": {
+    "RegistryAgent": {"callers": ["ChatAgent", "EmailAgent", "SMSAgent", "WebAgent", "Dashboard"], "port": 7060},
+    "ChatAgent":     {"callers": ["Dashboard", "ChatClient"], "port": 7002},
+    "EmailAgent":    {"callers": ["ChatAgent"], "port": 7001},
+    "SMSAgent":      {"callers": ["ChatAgent"], "port": 7003},
+    "WebAgent":      {"callers": ["ChatAgent"], "port": 7004},
+    "Dashboard":     {"callers": ["RegistryAgent", "ChatAgent", "EmailAgent", "SMSAgent", "WebAgent"]}
+  },
+  "side_effects": {
+    "EmailAgent": {"action": "send_email", "kind": "email"},
+    "SMSAgent":   {"action": "send_sms",   "kind": "phone"}
+  },
+  "external_content_agents": ["WebAgent"],
+  "allowed_agent_hosts": ["127.0.0.1", "localhost"],
+  "allowlists": {
+    "_comment": "The user profile's own email and phone are always included. '@domain.com' allows a whole domain.",
+    "email": ["@fairwindtech.com"],
+    "phone": []
+  },
+  "capability_issuers": {
+    "Dashboard": "any",
+    "ChatAgent": "allowlist_only"
+  },
+  "approval": {
+    "_comment": "mode: always | tainted (approval when the session has read external or suspicious content, or a recipient is off the allowlist) | never (approval only for off-list recipients)",
+    "mode": "tainted",
+    "timeout_seconds": 120
+  },
+  "screening": {
+    "_comment": "llm: also run an LLM classifier on inbound text. block_threshold: refuse inbound requests scoring at or above this (null = flag only, let the tool gates decide).",
+    "llm": false,
+    "llm_model": null,
+    "block_threshold": null
+  }
+}
