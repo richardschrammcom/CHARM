@@ -2,12 +2,42 @@
 
 **CHARM** (**C**ustom **H**arness **A**nd **R**egistry **M**anagement) is a multi-agent system built on Google's Agent-to-Agent (A2A) protocol, with a central registry for agent discovery and a three-panel web dashboard for chatting with the agents and watching them work.
 
-Version 3.0 is the "after" half of a before/after demo. CHARM 2.1 (in `../charm-v2.1`) is a working system whose trust boundaries were enforced by prompt text. 3.0 keeps every agent a reasoning specialist and adds a shared guard (`charm_guard.py`) that decides what actually happens: signed calls, mutual TLS, capability tokens for side effects, and human approval when a session has read untrusted content.
+Version 3.0 is the "after" half of a before/after demo. CHARM 2.1, the earlier version (not published in this repo), is a working system whose trust boundaries were enforced by prompt text. 3.0 keeps every agent a reasoning specialist and adds a shared guard (`charm_guard.py`) that decides what actually happens: signed calls, mutual TLS, capability tokens for side effects, and human approval when a session has read untrusted content.
 
 > This is a proof of concept and demo platform, not a production system.
 
+## Quick start
+
+Needs macOS or Linux, Python 3.12, and an Anthropic or OpenAI API key.
+
+```bash
+git clone https://github.com/richardschrammcom/CHARM.git
+cd CHARM
+
+# 1. Main virtual environment (startup.sh expects it at .venv)
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# 2. Separate environment for the Web Agent's browser (browser-use + Chromium)
+./setup_web_venv.sh
+
+# 3. Your settings: API keys, SMTP for email, TextBelt for SMS
+cp env.example .env
+cp user_profile.example.json user_profile.json
+#    edit both files
+
+# 4. Start everything. The first run creates the signing keys and TLS certificates in keys/.
+./startup.sh
+```
+
+Open **http://localhost:9091** and try "text me hello" or "read https://example.com and email me a 3-sentence summary". Stop everything with `./shutdown.sh`, and run the tests with `python -m pytest tests -q`.
+
+`.env`, `user_profile.json` and `keys/` hold your secrets and personal details. They are in `.gitignore`; keep them out of commits.
+
 ## Table of Contents
 
+- [Quick start](#quick-start)
 - [Overview](#overview)
 - [Security model](#security-model)
 - [Architecture](#architecture)
